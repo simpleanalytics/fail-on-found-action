@@ -15,7 +15,7 @@ The folder to exclude. Default `"node_modules,.git,build,.tmp,tmp"` (add more in
 ## Example usage
 
 ```yml
-uses: actions/fail-on-found-action@master
+uses: actions/fail-on-found-action@v2
 with:
   query: "cancelled,other term"
 ```
