@@ -1,6 +1,6 @@
 # Fail on found action
 
-This action make your workflow fail when it finds a certain query in your files.
+This action makes your workflow fail when it finds a certain query in your files.
 
 ## Inputs
 
@@ -18,6 +18,7 @@ The folder to exclude. Default `"node_modules,.git,build,.tmp,tmp"` (add more in
 uses: actions/fail-on-found-action@v2
 with:
   query: "cancelled,other term"
+  exclude: "node_modules,.git"
 ```
 
 ## Develop
