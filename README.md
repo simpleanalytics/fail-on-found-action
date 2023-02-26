@@ -19,3 +19,15 @@ uses: actions/fail-on-found-action@master
 with:
   query: "cancelled,other term"
 ```
+
+## Develop
+
+```bash
+docker build -t fail . && docker run --name fail -it fail
+```
+
+And after that
+
+```bash
+docker rm fail && docker build -t fail . && docker run --name fail -it fail
+```

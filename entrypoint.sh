@@ -3,10 +3,10 @@
 set -eu -o pipefail
 
 # Remove spaces from the comma separated string
-QUERY_TERMS=$(echo "$QUERY_TERMS" | sed 's/, /,/g')
+QUERY_TERMS=$(echo "$INPUT_QUERY" | sed 's/, /,/g')
 
 # Convert comma separated string to pipe separated string
-EXCLUDE_FOLDERS=$(echo $INPUT_EXCLUDE | sed -E 's/, ?/|/g')
+EXCLUDE_FOLDERS=$(echo "$INPUT_EXCLUDE" | sed -E 's/, ?/|/g')
 
 # Set found to 0
 found=0
