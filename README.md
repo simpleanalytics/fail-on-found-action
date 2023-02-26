@@ -1,6 +1,6 @@
 # Fail on found action
 
-This action prints "Hello World" or "Hello" + the name of a person to greet to the log.
+This action make your workflow fail when it finds a certain query in your files.
 
 ## Inputs
 
