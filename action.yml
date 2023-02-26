@@ -1,0 +1,21 @@
+# action.yml
+name: "Fail on found"
+author: "Adriaan van Rossum"
+description: "Fail when a certain string is found"
+branding:
+  icon: "search"
+  color: "red"
+inputs:
+  query:
+    description: "What string to search for in your files"
+    required: true
+  exclude:
+    description: "What folders to exclude"
+    required: false
+    default: "node_modules,.git,build,.tmp,tmp"
+runs:
+  using: "docker"
+  image: "Dockerfile"
+  args:
+    - ${{ inputs.query }}
+    - ${{ inputs.exclude }}
