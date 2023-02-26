@@ -30,8 +30,8 @@ done
 
 # If found is 1, exit and fail with 1
 if [[ $found -eq 1 ]]; then
-  echo "Found your query terms in files"
+  echo "Failed because it did find (one of) your query terms in your files"
   exit 1
 else
-  echo "Did not find query terms in files"
+  echo "Success! Did not find query terms in files"
 fi
