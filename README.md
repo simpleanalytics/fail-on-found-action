@@ -1,6 +1,6 @@
 # Fail on found action
 
-This action makes your workflow fail when it finds a certain query in your files.
+This action adds a warning annotation for every line in your files that contains a certain query. It does not fail your workflow.
 
 ## Inputs
 
@@ -15,7 +15,7 @@ The folder to exclude. Default `"node_modules,.git,build,.tmp,tmp"` (add more in
 ## Example usage
 
 ```yml
-uses: simpleanalytics/fail-on-found-action@v2
+uses: simpleanalytics/fail-on-found-action@main
 with:
   query: "cancelled,trailing,other term"
   exclude: "node_modules,.git"

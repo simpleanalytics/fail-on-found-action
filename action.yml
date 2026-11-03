@@ -1,7 +1,7 @@
 # action.yml
 name: "Fail on found"
 author: "Adriaan van Rossum"
-description: "Fail when a certain string is found"
+description: "Warn when a certain string is found"
 branding:
   icon: "search"
   color: "red"
