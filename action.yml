@@ -1,7 +1,7 @@
 # action.yml
 name: "Fail on found"
 author: "Adriaan van Rossum"
-description: "Warn when a certain string is found"
+description: "Fail when a certain string is found"
 branding:
   icon: "search"
   color: "red"
@@ -13,6 +13,10 @@ inputs:
     description: "What folders to exclude"
     required: false
     default: "node_modules,.git,build,.tmp,tmp"
+  warn:
+    description: "Set to true to warn instead of failing the job"
+    required: false
+    default: "false"
 runs:
   using: "docker"
   image: "Dockerfile"

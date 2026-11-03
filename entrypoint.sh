@@ -8,6 +8,10 @@ QUERY_TERMS=$(echo "$INPUT_QUERY" | sed 's/, /,/g')
 # Convert comma-separated string to pipe-separated string
 EXCLUDE_FOLDERS=$(echo "$INPUT_EXCLUDE" | sed -E 's/, ?/|/g')
 
+# Annotate found words as errors and fail, or as warnings when warn is true
+level=error
+if [[ ${INPUT_WARN:-false} == true ]]; then level=warning; fi
+
 found=0
 
 IFS=',' read -ra terms <<< "$QUERY_TERMS"
@@ -28,14 +32,15 @@ while IFS= read -r file; do
     while IFS=: read -r line _; do
       # GitHub shows only the first 10 annotations, so also log every location
       echo "Found '$term' in ${file#./}:$line"
-      echo "::warning file=${file#./},line=$line,title=Forbidden word::Found '$term'"
+      echo "::$level file=${file#./},line=$line,title=Forbidden word::Found '$term'"
       found=$((found + 1))
     done < <(grep -nI -- "$pattern" "$file" || true)
   done
 done < <(find . -type f | grep -vE "$EXCLUDE_FOLDERS")
 
 if [[ $found -gt 0 ]]; then
-  echo "Found $found forbidden word(s), see the warnings"
+  echo "Found $found forbidden word(s)"
+  if [[ $level == error ]]; then exit 1; fi
 else
   echo "Did not find any forbidden words"
 fi

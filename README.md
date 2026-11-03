@@ -1,6 +1,6 @@
 # Fail on found action
 
-This action adds a warning annotation for every line in your files that contains a certain query. It does not fail your workflow.
+This action makes your workflow fail when it finds a certain query in your files. It annotates every line that contains the query.
 
 ## Inputs
 
@@ -11,6 +11,10 @@ This action adds a warning annotation for every line in your files that contains
 ## `exclude` folders
 
 The folder to exclude. Default `"node_modules,.git,build,.tmp,tmp"` (add more in a PR if we miss obvious ones).
+
+## `warn`
+
+Set to `"true"` to annotate the lines with warnings instead of failing your workflow. Default `"false"`.
 
 ## Example usage
 
