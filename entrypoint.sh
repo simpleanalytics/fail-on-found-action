@@ -12,25 +12,25 @@ found=0
 
 IFS=',' read -ra terms <<< "$QUERY_TERMS"
 
-# Match whole words only, so "trail" doesn't match "trailing". Only add a word
-# boundary to a side that ends in a word character, so terms such as
-# '.indexOf("' still match after "str".
-patterns=()
-for term in "${terms[@]}"; do
-  pattern="$term"
-  if [[ $pattern =~ ^[[:alnum:]_] ]]; then pattern="\\b$pattern"; fi
-  if [[ $pattern =~ [[:alnum:]_]$ ]]; then pattern="$pattern\\b"; fi
-  patterns+=("$pattern")
-done
-
 # Loop through all text files in the repo
 while IFS= read -r file; do
-  for i in "${!terms[@]}"; do
-    # Annotate every line that contains the term
+  for term in "${terms[@]}"; do
+    # Skip empty terms, such as from a trailing comma, because they match every line
+    if [[ -z $term ]]; then continue; fi
+
+    # Match whole words only, so "trail" doesn't match "trailing". Only add a
+    # word boundary to a side that ends in a word character, so terms such as
+    # '.indexOf("' still match after "str".
+    pattern="$term"
+    if [[ $pattern =~ ^[[:alnum:]_] ]]; then pattern="\\b$pattern"; fi
+    if [[ $pattern =~ [[:alnum:]_]$ ]]; then pattern="$pattern\\b"; fi
+
     while IFS=: read -r line _; do
-      echo "::warning file=${file#./},line=$line,title=Forbidden word::Found '${terms[$i]}'"
+      # GitHub shows only the first 10 annotations, so also log every location
+      echo "Found '$term' in ${file#./}:$line"
+      echo "::warning file=${file#./},line=$line,title=Forbidden word::Found '$term'"
       found=$((found + 1))
-    done < <(grep -nI -- "${patterns[$i]}" "$file" || true)
+    done < <(grep -nI -- "$pattern" "$file" || true)
   done
 done < <(find . -type f | grep -vE "$EXCLUDE_FOLDERS")
 
