@@ -13,6 +13,10 @@ inputs:
     description: "What folders to exclude"
     required: false
     default: "node_modules,.git,build,.tmp,tmp"
+  warn:
+    description: "Set to true to warn instead of failing the job"
+    required: false
+    default: "false"
 runs:
   using: "docker"
   image: "Dockerfile"

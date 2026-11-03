@@ -8,28 +8,39 @@ QUERY_TERMS=$(echo "$INPUT_QUERY" | sed 's/, /,/g')
 # Convert comma-separated string to pipe-separated string
 EXCLUDE_FOLDERS=$(echo "$INPUT_EXCLUDE" | sed -E 's/, ?/|/g')
 
-# Set found to 0
+# Annotate found words as errors and fail, or as warnings when warn is true
+level=error
+if [[ ${INPUT_WARN:-false} == true ]]; then level=warning; fi
+
 found=0
 
-# Split the query terms into an array outside the loop for efficiency
 IFS=',' read -ra terms <<< "$QUERY_TERMS"
 
-# Loop through all files in the repo
-find . -type f | grep -vE "$EXCLUDE_FOLDERS" | while read -r file; do
-  # Loop through the array of forbidden terms
+# Loop through all text files in the repo
+while IFS= read -r file; do
   for term in "${terms[@]}"; do
-    # If the term is found as a whole word in the file, set found to 1
-    if grep -qw "$term" "$file"; then
-      echo "Found '$term' in file '$file'"
-      found=1
-    fi
-  done
-done
+    # Skip empty terms, such as from a trailing comma, because they match every line
+    if [[ -z $term ]]; then continue; fi
 
-# If found is 1, exit and fail with 1
-if [[ $found -eq 1 ]]; then
-  echo "Failed because it did find (one of) your query terms in your files"
-  exit 1
+    # Match whole words only, so "trail" doesn't match "trailing". Only add a
+    # word boundary to a side that ends in a word character, so terms such as
+    # '.indexOf("' still match after "str".
+    pattern="$term"
+    if [[ $pattern =~ ^[[:alnum:]_] ]]; then pattern="\\b$pattern"; fi
+    if [[ $pattern =~ [[:alnum:]_]$ ]]; then pattern="$pattern\\b"; fi
+
+    while IFS=: read -r line _; do
+      # GitHub shows only the first 10 annotations, so also log every location
+      echo "Found '$term' in ${file#./}:$line"
+      echo "::$level file=${file#./},line=$line,title=Forbidden word::Found '$term'"
+      found=$((found + 1))
+    done < <(grep -nI -- "$pattern" "$file" || true)
+  done
+done < <(find . -type f | grep -vE "$EXCLUDE_FOLDERS")
+
+if [[ $found -gt 0 ]]; then
+  echo "Found $found forbidden word(s)"
+  if [[ $level == error ]]; then exit 1; fi
 else
-  echo "Success! Did not find query terms in files"
+  echo "Did not find any forbidden words"
 fi
